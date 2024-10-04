@@ -1,0 +1,245 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+header nav {
+    margin-top: 1rem;
+}
+
+header nav a {
+    color: white;
+    margin: 0 1.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+header nav a:hover {
+    color: #FFD700; /* Gold color on hover */
+}
+
+main {
+    padding: 2rem;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+form input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid #4CAF50;
+    border-radius: 4px;
+    margin-right: 1rem;
+    transition: border-color 0.3s;
+}
+
+form input:focus {
+    border-color: #FFD700; /* Gold color on focus */
+    outline: none;
+}
+
+form button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #388E3C; /* Darker green on hover */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: white;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+ul li:hover {
+    background-color: #f1f1f1;
+    transform: translateY(-2px);
+}
+
+ul li.completed span {
+    text-decoration: line-through;
+    color: #999;
+}
+
+ul li a {
+    margin-left: 1rem;
+    color: #4CAF50;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+ul li a:hover {
+    color: #FFD700; /* Gold color on hover */
+}
+
+footer {
+    background-color: #f4f4f9;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #ccc;
+}
+
+footer .stats {
+    margin-bottom: 1rem;
+    color: #4CAF50
+}
+
+footer .theme-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer .theme-toggle label {
+    margin-right: 0.5rem;
+}
+
+.dark-mode {
+    background-color: #333;
+    color: white;
+}
+
+.dark-mode header {
+    background-color: #222;
+}
+
+.dark-mode ul li {
+    background-color: #444;
+}
+
+.dark-mode ul li.completed span {
+    color: #bbb;
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Dark mode styles */
+.dark-mode {
+    background-color: #333;
+    color: white;
+}
+
+.dark-mode header {
+    background-color: #222;
+}
+
+.dark-mode ul li {
+    background-color: #444;
+}
+
+.dark-mode ul li.completed span {
+    color: #bbb;
+}
+.quote-generator {
+    margin: 20px;
+    padding: 15px;
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    background-color: white;
+    color: #4CAF50;
+    text-align: center;
+    font-size: 18px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#quoteDisplay {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.neon-hover {
+    color: #39FF14;
+}
+
