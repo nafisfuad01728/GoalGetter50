@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="/static/icon.ico" rel="icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            background-color: white;
+            color: #4CAF50; /* Change text color to green */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .timer-input {
+            font-size: 24px;
+            padding: 10px;
+            margin: 10px;
+            width: 60px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .control-button {
+            font-size: 24px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .control-button:hover {
+            background-color: #45a049;
+        }
+
+        .flash {
+            animation: flash 0.5s infinite;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: black;
+            }
+            50% {
+                background-color: green;
+            }
+            100% {
+                background-color: black;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">GoalGetter50</div>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('completed') }}">Completed</a>
+            <a href="{{ url_for('archived') }}">Archived</a>
+            <a href="{{ url_for('timer') }}">Timer</a>
+            <a href="{{ url_for('notes') }}">Notes</a>
+            <a href="{{ url_for('logout') }}" style="float: right;">Log Out</a>
+        </nav>
+    </header>
+    <main class="timer-container">
+        <h2>Timer</h2>
+        <div class="timer-display" id="timerDisplay">00:00:00</div>
+        <div>
+            <input type="number" class="timer-input" id="hoursInput" placeholder="Hours" min="0">
+            <input type="number" class="timer-input" id="minutesInput" placeholder="Minutes" min="0">
+            <input type="number" class="timer-input" id="secondsInput" placeholder="Seconds" min="0">
+        </div>
+        <button class="control-button" id="startButton">Start Timer</button>
+        <button class="control-button" id="pauseButton" disabled>Pause Timer</button>
+        <button class="control-button" id="resumeButton" disabled>Resume Timer</button>
+        <h5 class="logo"> Refresh to Reset Timer</h5>
+    </main>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Time's up!</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="theme-switch">
+                <span class="slider round"></span>
+            </label>
+            <span style="color: #4CAF50;">Dark Mode</span>
+        </div>
+        <div> <p style="color: #4CAF50;">© <span id="year"></span> GoalGetter50. All rights reserved.</p> </div>
+    </footer>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        // Check for saved theme preference on page load
+        window.onload = function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-switch').checked = true; // Set the toggle to 'on'
+            }
+        };
+
+        // Toggle dark mode
+        document.getElementById('theme-switch').addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode');
+
+            // Save the current theme preference
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Timer functionality
+        const timerDisplay = document.getElementById('timerDisplay');
+        const hoursInput = document.getElementById('hoursInput');
+        const minutesInput = document.getElementById('minutesInput');
+        const secondsInput = document.getElementById('secondsInput');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const resumeButton = document.getElementById('resumeButton');
+        const modal = document.getElementById('myModal');
+        const closeModal = document.getElementsByClassName("close")[0];
+
+        let timer;
+        let timeRemaining;
+        let isPaused = false;
+
+        startButton.addEventListener('click', function() {
+            clearInterval(timer);
+
+            const hours = parseInt(hoursInput.value) || 0;
+            const minutes = parseInt(minutesInput.value) || 0;
+            const seconds = parseInt(secondsInput.value) || 0;
+            timeRemaining = (hours * 3600) + (minutes * 60) + seconds;
+
+            if (timeRemaining <= 0) {
+                alert("Please enter a valid duration.");
+                return;
+            }
+
+            updateDisplay(timeRemaining);
+            startButton.disabled = true;
+            pauseButton.disabled = false;
+            resumeButton.disabled = true;
+
+            timer = setInterval(function() {
+                if (!isPaused) {
+                    timeRemaining--;
+                    updateDisplay(timeRemaining);
+
+                    if (timeRemaining < 0) {
+                        clearInterval(timer);
+                        showModal();
+                        resetTimer();
+                    }
+                }
+            }, 1000);
+        });
+
+        pauseButton.addEventListener('click', function() {
+            isPaused = true;
+            pauseButton.disabled = true;
+            resumeButton.disabled = false;
+        });
+
+        resumeButton.addEventListener('click', function() {
+            isPaused = false;
+            pauseButton.disabled = false;
+            resumeButton.disabled = true;
+        });
+
+        function updateDisplay(time) {
+            const hours = String(Math.floor(time / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((time % 3600) / 60)).padStart(2, '0');
+            const seconds = String(time % 60).padStart(2, '0');
+            timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function resetTimer() {
+            hoursInput.value = '';
+            minutesInput.value = '';
+            secondsInput.value = '';
+            timerDisplay.textContent = '00:00:00'; // Reset display
+            startButton.disabled = false; // Enable start button
+            isPaused = false; // Reset pause state
+        }
+
+        function showModal() {
+            modal.style.display = "block";
+            document.body.classList.add('flash');
+        }
+
+        closeModal.onclick = function() {
+            modal.style.display = "none";
+            document.body.classList.remove('flash');
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                document.body.classList.remove('flash');
+            }
+        };
+    </script>
+</body>
+</html>
